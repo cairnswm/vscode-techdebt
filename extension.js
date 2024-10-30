@@ -1,6 +1,7 @@
 const vscode = require('vscode');
 const { analyzeFile } = require('./analyze'); // Importing analyzeFile from analyze.js
 const { chatCommand } = require('./chat'); // Importing chatCommand from chat.js
+const { techDebtCommand } = require('./techdebt'); // Importing techDebtCommand from techdebt.js
 
 function activate(context) {
   // Main command opens a quick pick for sub-commands
@@ -10,7 +11,8 @@ function activate(context) {
       { label: "Add SCSS", command: "extension.addScss" },
       { label: "Analyze file", command: "extension.analyzeFile" },
       { label: "Open Config Panel", command: "extension.openConfigPanel" },
-      { label: "Chat", command: "extension.chat" } // New chat command
+      { label: "Chat", command: "extension.chat" }, // New chat command
+      { label: "Tech Debt", command: "extension.techDebt" } // New Tech Debt command
     ];
 
     const selected = await vscode.window.showQuickPick(subCommands, {
@@ -28,6 +30,8 @@ function activate(context) {
         } else {
           vscode.window.showInformationMessage('No active editor found.');
         }
+      } else if (selected.command === 'extension.techDebt') {
+        techDebtCommand(); // Call techDebtCommand
       } else {
         vscode.commands.executeCommand(selected.command);
       }
