@@ -1,0 +1,95 @@
+{
+  "name": "context-menu-extension",
+  "displayName": "Context Menu Extension",
+  "description": "An extension to demonstrate context menu with sub commands.",
+  "version": "0.0.1",
+  "publisher": "your-name",
+  "engines": {
+    "vscode": "^1.50.0"
+  },
+  "activationEvents": [
+    "onCommand:extension.mainCommand",
+    "onCommand:extension.openCustomView"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "extension.mainCommand",
+          "title": "Main Command",
+          "group": "navigation"
+        },
+        {
+          "command": "extension.openCustomView",
+          "title": "Open Custom View"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "extension.mainCommand",
+        "title": "Main Command"
+      },
+      {
+        "command": "extension.subCommand1",
+        "title": "Sub Command 1"
+      },
+      {
+        "command": "extension.subCommand2",
+        "title": "Sub Command 2"
+      },
+      {
+        "command": "extension.openChat",
+        "title": "Open Chat"
+      },
+      {
+        "command": "extension.openCustomView",
+        "title": "Open Custom View"
+      },
+      {
+        "command": "extension.chat",
+        "title": "Chat"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "chatView",
+          "title": "Chat",
+          "icon": "resources/chat-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "explorer": [
+        {
+          "id": "customView",
+          "name": "Custom",
+          "icon": "resources/chat-icon.svg"
+        }
+      ]
+    },
+    "configuration": {
+      "type": "object",
+      "properties": {
+        "context-menu-extension.aiApi": {
+          "type": "string",
+          "default": "Open AI",
+          "description": "The selected AI API."
+        },
+        "context-menu-extension.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "The API key for the selected AI API."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "vsce package --allow-missing-repository",
+    "launch": "code --install-extension context-menu-extension-0.0.1.vsix",
+    "uninstall": "code --uninstall-extension your-name.context-menu-extension",
+    "start": "npm run compile && npm run launch"
+  }
+}
