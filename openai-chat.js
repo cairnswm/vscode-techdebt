@@ -34,10 +34,10 @@ async function getTechDebt(fileContent) {
       ];
   
       // Call the fetchOpenAIChat function with the prepared messages
-      const response = await fetchOpenAIChat({ messages });
+      const response = await fetchOpenAIChat(messages);
   
       // Return the result as a string
-      return response.data;
+      return response;
     } catch (error) {
       console.error('Error fetching tech debt analysis:', error);
       throw error;
