@@ -80,7 +80,7 @@
         },
         "context-menu-extension.apiKey": {
           "type": "string",
-          "default": "",
+          "default": "sk-bOQ573PYHhuZFIscVuhAACuRa6TJxCF36IAbuqcfEcT3BlbkFJxmk57F-14LH1ZoG6SJU7WZi6IPKql8Mn3u-vaom3AA",
           "description": "The API key for the selected AI API."
         }
       }
