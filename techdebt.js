@@ -1,35 +1,78 @@
 const vscode = require('vscode');
 const { getTechDebt } = require('./openai-chat.js'); // Adjust the path as needed
 
-// Main command to open the file in a new column and display cleaned content
+// Main command to display the tech debt in a diff view
 async function techDebtCommand() {
   const editor = vscode.window.activeTextEditor;
   if (editor) {
-    const fileUri = editor.document.uri;
     const text = editor.document.getText();
     
     // Process the content to remove tech debt comments
     const newText = await getTechDebt(text);
     console.log("getTechDebt", newText);
 
-    // Open the file in a new editor column beside the current one
-    const newEditor = await vscode.window.showTextDocument(fileUri, { viewColumn: vscode.ViewColumn.Beside });
+    // Create a URI for the virtual document
+    const originalUri = editor.document.uri;
+    const techDebtUri = vscode.Uri.parse(`techdebt:${originalUri.path}.techdebt`);
 
-    if (newEditor) {
-      // Replace the content in the new editor with the cleaned content
-      const edit = new vscode.WorkspaceEdit();
-      const entireRange = new vscode.Range(
-        new vscode.Position(0, 0),
-        newEditor.document.lineAt(newEditor.document.lineCount - 1).range.end
-      );
-      edit.replace(newEditor.document.uri, entireRange, newText);
-      await vscode.workspace.applyEdit(edit);
-      
-      // Save the document after edit to reflect changes immediately (optional)
-      await newEditor.document.save();
+    // Register a content provider for the tech debt virtual document
+    const provider = new TechDebtContentProvider(newText);
+    const providerRegistration = vscode.workspace.registerTextDocumentContentProvider('techdebt', provider);
+
+    // Show a diff view between the original document (left) and the tech debt document (right)
+    await vscode.commands.executeCommand(
+      'vscode.diff',
+      originalUri,  // (original file)
+      techDebtUri,  // (tech debt version)
+      'Tech Debt Diff',
+      { preview: false }
+    );
+
+    // Create the "Accept Tech Debt Changes" button in the editor title bar
+    const acceptButton = vscode.window.createTextEditorDecorationType({
+      after: {
+        contentText: '$(check) Accept Changes',
+        color: '#4CAF50',
+        fontWeight: 'bold',
+        fontSize: '13px',
+        margin: '0 10px',
+      }
+    });
+
+    const activeEditor = vscode.window.activeTextEditor;
+    if (activeEditor) {
+      activeEditor.setDecorations(acceptButton, [new vscode.Range(0, 0, 0, 0)]);
     }
+
+    // Register a command to accept the tech debt changes
+    vscode.commands.registerCommand('extension.acceptTechDebtChanges', async () => {
+      const edit = new vscode.WorkspaceEdit();
+      const range = new vscode.Range(
+        editor.document.positionAt(0),
+        editor.document.positionAt(text.length)
+      );
+      edit.replace(originalUri, range, newText);
+      await vscode.workspace.applyEdit(edit);
+      await editor.document.save();
+      vscode.window.showInformationMessage('Tech debt changes accepted.');
+      acceptButton.dispose(); // Remove the button after applying the changes
+    });
+
+    // Dispose the provider and accept button when done
+    providerRegistration.dispose();
   } else {
     vscode.window.showInformationMessage('No active editor found.');
+  }
+}
+
+// Content provider for the tech debt virtual document
+class TechDebtContentProvider {
+  constructor(newText) {
+    this.newText = newText;
+  }
+
+  provideTextDocumentContent(uri) {
+    return this.newText;
   }
 }
 

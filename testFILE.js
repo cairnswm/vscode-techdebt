@@ -1,6 +1,3 @@
-/**** Tech Debt **
-The API key is hard-coded in the function. It is recommended to securely manage API keys, possibly using environment variables.
-****/
 const fetchOpenAIChat = async (messages) => {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',

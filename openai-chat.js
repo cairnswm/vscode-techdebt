@@ -43,7 +43,7 @@ async function getTechDebt(fileContent) {
         content: `You are an AI expert in identifying technical debt in JavaScript and TypeScript code. 
               When provided with code, analyze it carefully for common tech debt issues, 
               such as poor structure, obsolete patterns, performance issues, and any maintenance challenges. 
-              Mark each instance directly in the code using the following comment structure:
+              Mark each instance directly in the code using the following inline-comment structure:
               "\n\n/**** Tech Debt **\nExplanation of tech debt\n****/\n\n"
               Always return the complete original file, annotated in place, do not add any additional markup, 
               with explanations for each identified area of tech debt. Maintain the file's original structure, 
